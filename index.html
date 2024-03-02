@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="https://cdn.jwplayer.com/libraries/MiW9uCZ2.js"></script>
+  <script src="https://cdn.singular.live/overlay.min.js"></script>
+</head>
+
+<body>
+  <div id="video-div"></div>
+
+  <script>
+    var playerInstance = jwplayer("video-div");
+
+    function initPlayer() {
+      playerInstance.setup({
+        file:"https://www.udrop.com/file/LxjH/Solo_Leveling_S01E04_[RareToonsIndia]_720P_HD.compressed.mp4",
+        stretching: "uniform",
+        controls: true, // Removed quotes around true
+        muted: false // Removed quotes around false
+      });
+
+      playerInstance.on("ready", LoadSingular);
+    }
+
+    function LoadSingular() {
+      console.log("loading singular");
+      let options = {
+        class: "singular",
+        endpoint: "https://app.singular.live",
+        interactive: true,
+        syncGraphics: false,
+        showPreloader: true
+      };
+      let singularElem = document.getElementsByClassName("jw-media")[0];
+      var overlay = SingularOverlay(singularElem, options);
+
+      overlay.setContent(
+        { compToken: "0fYhUGfdO4wvgu9mXsliRO" },
+        params => {
+          // Hide the jw-preview element
+          let preview = document.getElementsByClassName("jw-preview")[0];
+          preview.style.visibility = "hidden"; // Fixed setting visibility property
+        }
+      );
+
+      playerInstance.on("play", function (e) {
+        console.log("video playing");
+        overlay.videoPlaying();
+      });
+
+      playerInstance.on("pause", function (e) {
+        console.log("video paused");
+        overlay.videoPaused();
+      });
+
+      playerInstance.on("time", function (e) {
+        let time = e.position.toFixed(2);
+        overlay.videoTime(time);
+      });
+
+      playerInstance.on("seek", function (e) {
+        overlay.videoSeeking(e.offset.toFixed(2));
+      });
+
+      playerInstance.on("mute", function (e) {
+        if (e.mute) {
+          overlay.videoMuted();
+        } else {
+          overlay.videoUnmuted(100);
+        }
+      });
+
+      playerInstance.on("complete", function (e) {
+        overlay.videoFinished();
+      });
+
+      // Video DVE
+      let videoElement = document.getElementsByClassName("jw-video")[0];
+      // videoElement.style = "margin-right: 21.9%;transform: scale(0.91);";
+      console.log("end of loadSingular");
+    }
+
+    initPlayer(); // Call the initPlayer function to start everything
+
+  </script>
+</body>
+
+</html>
